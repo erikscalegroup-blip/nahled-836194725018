@@ -1,0 +1,1 @@
+var e=`/assets/regulator-BVuEjres.jpg`;export{e as t};

@@ -1,0 +1,1 @@
+var e=`/assets/strojovna-BWE-LWDP.jpg`;export{e as t};

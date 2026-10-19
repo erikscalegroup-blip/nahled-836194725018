@@ -1,0 +1,1 @@
+var e=`/assets/klimatizacia-C7ydokVe.jpg`;export{e as t};

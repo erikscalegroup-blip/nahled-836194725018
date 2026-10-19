@@ -1,0 +1,1 @@
+var e=`/assets/masiarstvo-BGIaBJu1.jpg`;export{e as t};

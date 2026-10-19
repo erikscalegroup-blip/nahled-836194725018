@@ -1,0 +1,1 @@
+var e=`/assets/servis-CdbCS7v5.jpg`;export{e as t};
