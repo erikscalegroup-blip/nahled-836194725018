@@ -1,0 +1,47 @@
+name: Brand HTML
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Patch pages
+        run: |
+          python3 << 'PY'
+          from pathlib import Path
+          old = "family=Archivo:ital,wdth,wght@0,62..125,100..900;1,62..125,100..900&amp;family=Noto+Sans:ital,wght@0,300..800;1,300..700&amp;display=swap"
+          new = "family=Barlow+Condensed:wght@600;700;800&amp;family=Barlow:ital,wght@0,400;0,500;0,600;1,400&amp;display=swap"
+          script = '<script src="/brand.js?v=20261104"></script>'
+          n = 0
+          for p in Path(".").rglob("index.html"):
+              text = p.read_text(encoding="utf-8")
+              orig = text
+              if old in text:
+                  text = text.replace(old, new, 1)
+              text = text.replace("favicon.png?v=20261102", "favicon.png?v=20261104")
+              if "brand.js?v=20261104" not in text:
+                  if text.count("</body>") != 1:
+                      raise SystemExit("body count " + str(p))
+                  text = text.replace("</body>", script + "</body>", 1)
+              if text != orig:
+                  p.write_text(text, encoding="utf-8")
+                  n += 1
+                  print("patched", p)
+              else:
+                  print("unchanged", p)
+          print("count", n)
+          PY
+      - name: Commit
+        run: |
+          git config user.name "erikscalegroup-blip"
+          git config user.email "erikscalegroup@gmail.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "nothing to commit"
+          else
+            git commit -m "Brandbook: pismo a logo na vsetkych stranach"
+            git push
+          fi
