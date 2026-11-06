@@ -103,9 +103,8 @@
     var box=document.createElement("section");
     box.id="mteq-mapa";
     box.className="mt-10";
-    var link="https://www.google.com/maps/place/Moyzesova+4,+902+01+Pezinok/@48.284158,17.2705815,17z";
     var src="https://maps.google.com/maps?q=Moyzesova+4,+902+01+Pezinok&ll=48.284158,17.2705815&z=17&hl=sk&output=embed";
-    box.innerHTML='<div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between"><div><span class="stitok">Kde n\u00e1s n\u00e1jdete</span><h2 class="t-nadpis mt-3">'+ADRESA+'</h2></div><a class="btn btn-modra" href="'+link+'" target="_blank" rel="noopener noreferrer">Otvori\u0165 v Google map\u00e1ch</a></div><div class="mteq-mapa-ram mt-6"><iframe title="Mapa s\u00eddla M-TEQ, Moyzesova 4, Pezinok" src="'+src+'" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe></div>';
+    box.innerHTML='<div><span class="stitok">Kde n\u00e1s n\u00e1jdete</span><h2 class="t-nadpis mt-3">'+ADRESA+'</h2></div><div class="mteq-mapa-ram mt-6"><iframe title="Mapa s\u00eddla M-TEQ, Moyzesova 4, Pezinok" src="'+src+'" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe></div>';
     grid.parentNode.insertBefore(box, grid.nextSibling);
   }
   function paint(){
