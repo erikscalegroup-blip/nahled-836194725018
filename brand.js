@@ -10,6 +10,7 @@
     +"h2.logotyp svg{display:block;width:auto;height:3.1rem}"
     +"a.mteq-telefon{border-color:rgba(246,248,250,.55);color:#F6F8FA}"
     +"a.mteq-telefon:hover{border-color:#fff;color:#fff;background:transparent}"
+    +"a.fixed[href='tel:+421902639923']{flex-wrap:nowrap!important;white-space:nowrap!important;width:max-content;max-width:calc(100vw - 2rem)}"
     +".mteq-adresa,.mteq-adresa-firma{color:inherit}"
     +"@media (width<=1023px){.uvod-znacka svg{height:4.8rem}}"
     +"@media (width<=639px){.uvod-znacka svg{height:3.4rem}a.logotyp svg{height:2.15rem}}";
