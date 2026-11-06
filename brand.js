@@ -58,17 +58,30 @@
     var foot=document.querySelector("footer");
     if(!foot) return;
     var col=foot.querySelector(".space-y-1");
-    if(col && !col.querySelector(".mteq-adresa-firma")){
-      var line=document.createElement("p");
-      line.className="mteq-adresa-firma";
-      line.textContent=ADRESA;
+    if(col){
       var ps=col.querySelectorAll("p");
-      var senk=null;
       for(var i=0;i<ps.length;i++){
-        if(ps[i].textContent.indexOf("\u0160enkvice")>=0){ senk=ps[i]; break; }
+        if(ps[i].textContent.indexOf("\u0160enkvice")>=0) ps[i].textContent=ADRESA;
       }
-      if(senk) senk.insertAdjacentElement("afterend", line);
-      else col.insertBefore(line, col.children[1]||null);
+    }
+    var seats=document.querySelectorAll("p.t-sluzba");
+    for(var s=0;s<seats.length;s++){
+      if(seats[s].textContent.indexOf("\u0160enkvice")>=0) seats[s].textContent=ADRESA;
+    }
+    var metas=document.querySelectorAll("meta[name='description'],meta[property='og:description']");
+    for(var m=0;m<metas.length;m++){
+      var c=metas[m].getAttribute("content")||"";
+      if(c.indexOf("\u0160enkvice")>=0) metas[m].setAttribute("content", c.split("\u0160enkvice").join(ADRESA));
+    }
+    var lds=document.querySelectorAll("script[type='application/ld+json']");
+    for(var n=0;n<lds.length;n++){
+      var raw=lds[n].textContent;
+      if(raw.indexOf("\u0160enkvice")<0) continue;
+      var next=raw.split("\u0160enkvice").join("Pezinok");
+      if(next.indexOf("streetAddress")<0){
+        next=next.split('"addressLocality":"Pezinok"').join('"streetAddress":"Moyzesova 4","postalCode":"902 01","addressLocality":"Pezinok"');
+      }
+      lds[n].textContent=next;
     }
     var bottom=foot.querySelector(".obal.mt-12 .border-t") || foot.querySelector(".obal.mt-12");
     if(bottom && !bottom.querySelector(".mteq-adresa")){
