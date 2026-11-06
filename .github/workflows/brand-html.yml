@@ -8,43 +8,27 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Put the v4 logo on the site
+      - name: Align the hero logo with the headline
         run: |
           python3 << 'PY'
+          import json
           from pathlib import Path
-          js_path = Path('brand.js')
-          js = js_path.read_text(encoding='utf-8')
-          word = '''<svg class="mteq-logo mteq-word" viewBox="309.76 345.00 222.43 48.75" aria-hidden="true" fill="none"><path fill="currentColor" fill-rule="evenodd" d="M309.76 390.70 L309.76 345.00 L319.66 345.00 L332.61 360.23 L345.56 345.00 L355.47 345.00 L355.47 390.70 L344.04 390.70 L344.04 364.04 L332.61 375.47 L321.19 364.04 L321.19 390.70 L309.76 390.70 Z"/><path fill="currentColor" fill-rule="evenodd" d="M363.08 364.04 L381.36 364.04 L381.36 373.18 L363.08 373.18 L363.08 364.04 Z"/><path fill="currentColor" fill-rule="evenodd" d="M388.98 345.00 L431.64 345.00 L431.64 355.66 L416.40 355.66 L416.40 390.70 L404.22 390.70 L404.22 355.66 L388.98 355.66 L388.98 345.00 Z"/><path fill="currentColor" fill-rule="evenodd" d="M439.26 345.00 L478.87 345.00 L478.87 355.66 L451.45 355.66 L451.45 362.52 L475.06 362.52 L475.06 373.18 L451.45 373.18 L451.45 380.04 L478.87 380.04 L478.87 390.70 L439.26 390.70 L439.26 345.00 Z"/><path fill="currentColor" fill-rule="evenodd" d="M491.06 345.00 L523.05 345.00 L530.67 352.62 L530.67 377.75 L518.48 377.75 L518.48 356.43 L497.15 356.43 L497.15 379.28 L515.43 379.28 L515.43 390.70 L491.06 390.70 L484.96 384.61 L484.96 351.86 L491.06 345.00 Z"/><path fill="#0B6BB5" fill-rule="evenodd" d="M520.00 381.56 L532.19 381.56 L532.19 393.75 L520.00 393.75 L520.00 381.56 Z"/></svg>'''
-          stack = '''<svg class="mteq-logo mteq-stack" viewBox="309.76 206.25 222.43 187.50" aria-hidden="true" fill="none"><path fill="currentColor" fill-rule="evenodd" d="M363.00 206.25 L458.33 206.25 L479.25 227.18 L479.25 289.95 L459.49 289.95 L459.49 235.31 L449.03 226.01 L382.76 226.01 L382.76 302.74 L392.06 302.74 L392.06 244.61 L404.85 244.61 L421.13 260.89 L437.40 244.61 L450.19 244.61 L450.19 308.55 L431.59 308.55 L431.59 274.84 L421.13 286.46 L410.66 274.84 L410.66 322.50 L382.76 322.50 L363.00 302.74 L363.00 206.25 Z"/><path fill="#0B6BB5" fill-rule="evenodd" d="M435.08 307.39 L459.49 307.39 L459.49 295.76 L479.25 295.76 L479.25 322.50 L435.08 322.50 L435.08 307.39 Z"/><path fill="currentColor" fill-rule="evenodd" d="M309.76 390.70 L309.76 345.00 L319.66 345.00 L332.61 360.23 L345.56 345.00 L355.47 345.00 L355.47 390.70 L344.04 390.70 L344.04 364.04 L332.61 375.47 L321.19 364.04 L321.19 390.70 L309.76 390.70 Z"/><path fill="currentColor" fill-rule="evenodd" d="M363.08 364.04 L381.36 364.04 L381.36 373.18 L363.08 373.18 L363.08 364.04 Z"/><path fill="currentColor" fill-rule="evenodd" d="M388.98 345.00 L431.64 345.00 L431.64 355.66 L416.40 355.66 L416.40 390.70 L404.22 390.70 L404.22 355.66 L388.98 355.66 L388.98 345.00 Z"/><path fill="currentColor" fill-rule="evenodd" d="M439.26 345.00 L478.87 345.00 L478.87 355.66 L451.45 355.66 L451.45 362.52 L475.06 362.52 L475.06 373.18 L451.45 373.18 L451.45 380.04 L478.87 380.04 L478.87 390.70 L439.26 390.70 L439.26 345.00 Z"/><path fill="currentColor" fill-rule="evenodd" d="M491.06 345.00 L523.05 345.00 L530.67 352.62 L530.67 377.75 L518.48 377.75 L518.48 356.43 L497.15 356.43 L497.15 379.28 L515.43 379.28 L515.43 390.70 L491.06 390.70 L484.96 384.61 L484.96 351.86 L491.06 345.00 Z"/><path fill="#0B6BB5" fill-rule="evenodd" d="M520.00 381.56 L532.19 381.56 L532.19 393.75 L520.00 393.75 L520.00 381.56 Z"/></svg>'''
+          PAIRS = json.loads("[[\"+\\\".uvod-znacka svg{display:block;width:auto;height:12.5rem}\\\"\", \"+\\\".uvod-domov h1.uvod-znacka{width:min(23ch,100%);font-size:2.5rem}\\\"\\n    +\\\".uvod-domov h1.uvod-znacka svg{display:block;width:100%;height:auto}\\\"\"], [\"+\\\"@media (width<=1023px){.uvod-znacka svg{height:9.5rem}h2.logotyp svg{height:7.5rem}}\\\"\", \"+\\\"@media (width<=1023px){h2.logotyp svg{height:7.5rem}}\\\"\"], [\"+\\\"@media (width<=639px){.uvod-znacka svg{height:7.5rem}h2.logotyp svg{height:6.25rem}a.logotyp svg,footer a.logotyp svg{height:1.45rem}}\\\"\", \"+\\\"@media (width<=639px){.uvod-domov h1.uvod-znacka{font-size:2rem}h2.logotyp svg{height:6.25rem}a.logotyp svg,footer a.logotyp svg{height:1.45rem}}\\\"\"], [\"    mapa();\\n  }\\n  var busy=false;\", \"    mapa();\\n    zarovnaj();\\n  }\\n  function zarovnaj(){\\n    var h1=document.querySelector(\\\"h1.uvod-znacka\\\");\\n    var veta=document.querySelector(\\\"section.uvod-domov .uvod-veta\\\");\\n    if(!h1||!veta) return;\\n    var svg=h1.querySelector(\\\"svg.mteq-logo\\\");\\n    if(!svg) return;\\n    var w=Math.round(veta.getBoundingClientRect().width);\\n    if(w<80) return;\\n    if(h1.getAttribute(\\\"data-w\\\")===String(w)) return;\\n    h1.setAttribute(\\\"data-w\\\", String(w));\\n    h1.style.width=w+\\\"px\\\";\\n    h1.style.maxWidth=\\\"100%\\\";\\n    svg.style.width=\\\"100%\\\";\\n    svg.style.height=\\\"auto\\\";\\n  }\\n  var busy=false;\"], [\"    obs.observe(document.documentElement, {childList:true, subtree:true});\\n  }\", \"    obs.observe(document.documentElement, {childList:true, subtree:true});\\n    window.addEventListener(\\\"resize\\\", function(){\\n      var h1=document.querySelector(\\\"h1.uvod-znacka\\\");\\n      if(h1) h1.removeAttribute(\\\"data-w\\\");\\n      zarovnaj();\\n    });\\n    if(document.fonts&&document.fonts.ready) document.fonts.ready.then(function(){\\n      var h1=document.querySelector(\\\"h1.uvod-znacka\\\");\\n      if(h1) h1.removeAttribute(\\\"data-w\\\");\\n      zarovnaj();\\n    });\\n  }\"]]")
 
-          def jsq(s):
-              return '"' + s.replace("\\", "\\\\").replace('"', '\\"') + '"'
-          start = js.find("  var LOCKUP=")
-          end = js.find("  var ADRESA=")
-          if start < 0 or end < 0:
-              raise SystemExit("logo vars missing")
-          js = js[:start] + "  var WORD=" + jsq(word) + ";\n  var STACK=" + jsq(stack) + ";\n" + js[end:]
-          old_css = '+"a.logotyp svg{display:block;width:auto;height:2.5rem}"\n    +".uvod-znacka svg{display:block;width:auto;height:6.4rem}"\n    +"h2.logotyp svg{display:block;width:auto;height:3.1rem}"'
-          new_css = '+"a.logotyp svg{display:block;width:auto;height:1.7rem}"\n    +"footer a.logotyp svg{height:2.15rem}"\n    +".uvod-znacka svg{display:block;width:auto;height:12.5rem}"\n    +"h2.logotyp svg{display:block;width:auto;height:9rem}"'
-          old_tab = '+"@media (width<=1023px){.uvod-znacka svg{height:4.8rem}}"'
-          new_tab = '+"@media (width<=1023px){.uvod-znacka svg{height:9.5rem}h2.logotyp svg{height:7.5rem}}"'
-          old_mob = '+"@media (width<=639px){.uvod-znacka svg{height:3.4rem}a.logotyp svg{height:2.15rem}}"'
-          new_mob = '+"@media (width<=639px){.uvod-znacka svg{height:7.5rem}h2.logotyp svg{height:6.25rem}a.logotyp svg,footer a.logotyp svg{height:1.45rem}}"'
-          old_swap = 'document.querySelectorAll("a.logotyp").forEach(function(el){ swap(el, LOCKUP); });\n    document.querySelectorAll("h1.uvod-znacka, h2.logotyp").forEach(function(el){ swap(el, WORD); });'
-          new_swap = 'document.querySelectorAll("a.logotyp").forEach(function(el){ swap(el, WORD); });\n    document.querySelectorAll("h1.uvod-znacka, h2.logotyp").forEach(function(el){ swap(el, STACK); });'
-          for name, old in (("css", old_css), ("tab", old_tab), ("mob", old_mob), ("swap", old_swap)):
-              if js.count(old) != 1:
-                  raise SystemExit(name + " " + str(js.count(old)))
-          js = js.replace(old_css, new_css, 1).replace(old_tab, new_tab, 1).replace(old_mob, new_mob, 1).replace(old_swap, new_swap, 1)
-          if "LOCKUP" in js or "mteq-lockup" in js:
-              raise SystemExit("old lockup remains")
+          js_path = Path("brand.js")
+          js = js_path.read_text(encoding="utf-8")
+          for i,(old,new) in enumerate(PAIRS):
+              c = js.count(old)
+              if c != 1:
+                  raise SystemExit("anchor %s count %s" % (i, c))
+              js = js.replace(old, new, 1)
           js_path.write_text(js, encoding="utf-8")
           print("brand.js patched", len(js))
           n = 0
           for p in Path(".").rglob("*.html"):
               html = p.read_text(encoding="utf-8")
               orig = html
-              html = html.replace('brand.js?v=20261106e"', 'brand.js?v=20261106f"')
+              html = html.replace('brand.js?v=20261106f"', 'brand.js?v=20261106g"')
               if html != orig:
                   p.write_text(html, encoding="utf-8")
                   n += 1
@@ -59,6 +43,6 @@ jobs:
           if git diff --cached --quiet; then
             echo "nothing to commit"
           else
-            git commit -m "Logo: symbol nad napisom, v hlavicke len napis"
+            git commit -m "Hero: logo zarovnane s vetou"
             git push
           fi
