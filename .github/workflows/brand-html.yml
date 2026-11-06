@@ -8,27 +8,29 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Cache bust and fix form text
+      - name: Sticky call button stays on one line
         run: |
           python3 << 'PY'
           from pathlib import Path
-          js = Path("assets/dopyt-DVGuLqJT.js")
-          raw = js.read_bytes()
-          fixed = raw.replace("odoslan\u00f9".encode("utf-8"), "odoslan\u00fd".encode("utf-8"))
-          if fixed != raw:
-              js.write_bytes(fixed)
-              print("fixed odoslany")
+          js = Path("brand.js")
+          text = js.read_text(encoding="utf-8")
+          rule = "a.fixed[href='tel:+421902639923']{flex-wrap:nowrap!important;white-space:nowrap!important;width:max-content;max-width:calc(100vw - 2rem)}"
+          if rule not in text:
+              needle = "a.mteq-telefon:hover{border-color:#fff;color:#fff;background:transparent}"
+              if needle not in text:
+                  raise SystemExit("needle missing")
+              text = text.replace(needle, needle + "\"\n    +\"" + rule, 1)
+              js.write_text(text, encoding="utf-8")
+              print("css added")
           else:
-              print("form text already ok", b"1e2f2602" in raw)
+              print("css already there")
           n = 0
           for p in Path(".").rglob("*.html"):
-              text = p.read_text(encoding="utf-8")
-              orig = text
-              text = text.replace("brand.js?v=20261104", "brand.js?v=20261106")
-              if "dopyt-DVGuLqJT.js?v=" not in text:
-                  text = text.replace("/assets/dopyt-DVGuLqJT.js", "/assets/dopyt-DVGuLqJT.js?v=20261106")
-              if text != orig:
-                  p.write_text(text, encoding="utf-8")
+              html = p.read_text(encoding="utf-8")
+              orig = html
+              html = html.replace('brand.js?v=20261106"', 'brand.js?v=20261106b"')
+              if html != orig:
+                  p.write_text(html, encoding="utf-8")
                   n += 1
                   print("patched", p)
           print("count", n)
@@ -41,6 +43,6 @@ jobs:
           if git diff --cached --quiet; then
             echo "nothing to commit"
           else
-            git commit -m "Cache: novy brand.js a formular"
+            git commit -m "Telefon na mobile ostava v jednom riadku"
             git push
           fi
