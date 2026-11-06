@@ -7,14 +7,15 @@
     +".t-nadpis,.t-sluzba{font-weight:700!important}"
     +"a.logotyp svg{display:block;width:auto;height:1.7rem}"
     +"footer a.logotyp svg{height:2.15rem}"
-    +".uvod-znacka svg{display:block;width:auto;height:12.5rem}"
+    +".uvod-domov h1.uvod-znacka{width:min(23ch,100%);font-size:2.5rem}"
+    +".uvod-domov h1.uvod-znacka svg{display:block;width:100%;height:auto}"
     +"h2.logotyp svg{display:block;width:auto;height:9rem}"
     +"a.mteq-telefon{border-color:rgba(246,248,250,.55);color:#F6F8FA}"
     +"a.mteq-telefon:hover{border-color:#fff;color:#fff;background:transparent}"
     +"a.fixed[href='tel:+421902639923']{flex-wrap:nowrap!important;white-space:nowrap!important;width:max-content;max-width:calc(100vw - 2rem)}"
     +".mteq-adresa,.mteq-adresa-firma{color:inherit}"
-    +"@media (width<=1023px){.uvod-znacka svg{height:9.5rem}h2.logotyp svg{height:7.5rem}}"
-    +"@media (width<=639px){.uvod-znacka svg{height:7.5rem}h2.logotyp svg{height:6.25rem}a.logotyp svg,footer a.logotyp svg{height:1.45rem}}"
+    +"@media (width<=1023px){h2.logotyp svg{height:7.5rem}}"
+    +"@media (width<=639px){.uvod-domov h1.uvod-znacka{font-size:2rem}h2.logotyp svg{height:6.25rem}a.logotyp svg,footer a.logotyp svg{height:1.45rem}}"
     +".mteq-mapa-ram{overflow:hidden;border-radius:24px;background:#fff;border:1px solid #cbd8e2}"
     +".mteq-mapa-ram iframe{display:block;width:100%;height:280px;border:0}"
     +"@media (width>=640px){.mteq-mapa-ram iframe{height:440px}}";
@@ -115,6 +116,22 @@
     phone();
     address();
     mapa();
+    zarovnaj();
+  }
+  function zarovnaj(){
+    var h1=document.querySelector("h1.uvod-znacka");
+    var veta=document.querySelector("section.uvod-domov .uvod-veta");
+    if(!h1||!veta) return;
+    var svg=h1.querySelector("svg.mteq-logo");
+    if(!svg) return;
+    var w=Math.round(veta.getBoundingClientRect().width);
+    if(w<80) return;
+    if(h1.getAttribute("data-w")===String(w)) return;
+    h1.setAttribute("data-w", String(w));
+    h1.style.width=w+"px";
+    h1.style.maxWidth="100%";
+    svg.style.width="100%";
+    svg.style.height="auto";
   }
   var busy=false;
   var obs=new MutationObserver(function(){
@@ -126,6 +143,16 @@
   function start(){
     paint();
     obs.observe(document.documentElement, {childList:true, subtree:true});
+    window.addEventListener("resize", function(){
+      var h1=document.querySelector("h1.uvod-znacka");
+      if(h1) h1.removeAttribute("data-w");
+      zarovnaj();
+    });
+    if(document.fonts&&document.fonts.ready) document.fonts.ready.then(function(){
+      var h1=document.querySelector("h1.uvod-znacka");
+      if(h1) h1.removeAttribute("data-w");
+      zarovnaj();
+    });
   }
   if(document.readyState==="loading") document.addEventListener("DOMContentLoaded", start);
   else start();
