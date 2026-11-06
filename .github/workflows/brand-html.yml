@@ -8,27 +8,58 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Sticky call button stays on one line
+      - name: Replace leftover Senkvice with the Pezinok address
         run: |
           python3 << 'PY'
           from pathlib import Path
-          js = Path("brand.js")
-          text = js.read_text(encoding="utf-8")
-          rule = "a.fixed[href='tel:+421902639923']{flex-wrap:nowrap!important;white-space:nowrap!important;width:max-content;max-width:calc(100vw - 2rem)}"
-          if rule not in text:
-              needle = "a.mteq-telefon:hover{border-color:#fff;color:#fff;background:transparent}"
-              if needle not in text:
-                  raise SystemExit("needle missing")
-              text = text.replace(needle, needle + "\"\n    +\"" + rule, 1)
-              js.write_text(text, encoding="utf-8")
-              print("css added")
-          else:
-              print("css already there")
+          js_path = Path("brand.js")
+          js = js_path.read_text(encoding="utf-8")
+          old = """    if(col && !col.querySelector(".mteq-adresa-firma")){
+                var line=document.createElement("p");
+                line.className="mteq-adresa-firma";
+                line.textContent=ADRESA;
+                var ps=col.querySelectorAll("p");
+                var senk=null;
+                for(var i=0;i<ps.length;i++){
+                  if(ps[i].textContent.indexOf("\\u0160enkvice")>=0){ senk=ps[i]; break; }
+                }
+                if(senk) senk.insertAdjacentElement("afterend", line);
+                else col.insertBefore(line, col.children[1]||null);
+              }"""
+          new = """    if(col){
+                var ps=col.querySelectorAll("p");
+                for(var i=0;i<ps.length;i++){
+                  if(ps[i].textContent.indexOf("\\u0160enkvice")>=0) ps[i].textContent=ADRESA;
+                }
+              }
+              var seats=document.querySelectorAll("p.t-sluzba");
+              for(var s=0;s<seats.length;s++){
+                if(seats[s].textContent.indexOf("\\u0160enkvice")>=0) seats[s].textContent=ADRESA;
+              }
+              var metas=document.querySelectorAll("meta[name='description'],meta[property='og:description']");
+              for(var m=0;m<metas.length;m++){
+                var c=metas[m].getAttribute("content")||"";
+                if(c.indexOf("\\u0160enkvice")>=0) metas[m].setAttribute("content", c.split("\\u0160enkvice").join(ADRESA));
+              }
+              var lds=document.querySelectorAll("script[type='application/ld+json']");
+              for(var n=0;n<lds.length;n++){
+                var raw=lds[n].textContent;
+                if(raw.indexOf("\\u0160enkvice")<0) continue;
+                var next=raw.split("\\u0160enkvice").join("Pezinok");
+                if(next.indexOf("streetAddress")<0){
+                  next=next.split('"addressLocality":"Pezinok"').join('"streetAddress":"Moyzesova 4","postalCode":"902 01","addressLocality":"Pezinok"');
+                }
+                lds[n].textContent=next;
+              }"""
+          if js.count(old) != 1:
+              raise SystemExit("address block not found: " + str(js.count(old)))
+          js_path.write_text(js.replace(old, new, 1), encoding="utf-8")
+          print("brand.js patched")
           n = 0
           for p in Path(".").rglob("*.html"):
               html = p.read_text(encoding="utf-8")
               orig = html
-              html = html.replace('brand.js?v=20261106"', 'brand.js?v=20261106b"')
+              html = html.replace('brand.js?v=20261106b"', 'brand.js?v=20261106c"')
               if html != orig:
                   p.write_text(html, encoding="utf-8")
                   n += 1
@@ -43,6 +74,6 @@ jobs:
           if git diff --cached --quiet; then
             echo "nothing to commit"
           else
-            git commit -m "Telefon na mobile ostava v jednom riadku"
+            git commit -m "Sidlo: Moyzesova namiesto Senkvic"
             git push
           fi
