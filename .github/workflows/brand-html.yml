@@ -8,58 +8,45 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Replace leftover Senkvice with the Pezinok address
+      - name: Add the contact map
         run: |
           python3 << 'PY'
           from pathlib import Path
           js_path = Path("brand.js")
           js = js_path.read_text(encoding="utf-8")
-          old = """    if(col && !col.querySelector(".mteq-adresa-firma")){
-                var line=document.createElement("p");
-                line.className="mteq-adresa-firma";
-                line.textContent=ADRESA;
-                var ps=col.querySelectorAll("p");
-                var senk=null;
-                for(var i=0;i<ps.length;i++){
-                  if(ps[i].textContent.indexOf("\\u0160enkvice")>=0){ senk=ps[i]; break; }
-                }
-                if(senk) senk.insertAdjacentElement("afterend", line);
-                else col.insertBefore(line, col.children[1]||null);
-              }"""
-          new = """    if(col){
-                var ps=col.querySelectorAll("p");
-                for(var i=0;i<ps.length;i++){
-                  if(ps[i].textContent.indexOf("\\u0160enkvice")>=0) ps[i].textContent=ADRESA;
-                }
-              }
-              var seats=document.querySelectorAll("p.t-sluzba");
-              for(var s=0;s<seats.length;s++){
-                if(seats[s].textContent.indexOf("\\u0160enkvice")>=0) seats[s].textContent=ADRESA;
-              }
-              var metas=document.querySelectorAll("meta[name='description'],meta[property='og:description']");
-              for(var m=0;m<metas.length;m++){
-                var c=metas[m].getAttribute("content")||"";
-                if(c.indexOf("\\u0160enkvice")>=0) metas[m].setAttribute("content", c.split("\\u0160enkvice").join(ADRESA));
-              }
-              var lds=document.querySelectorAll("script[type='application/ld+json']");
-              for(var n=0;n<lds.length;n++){
-                var raw=lds[n].textContent;
-                if(raw.indexOf("\\u0160enkvice")<0) continue;
-                var next=raw.split("\\u0160enkvice").join("Pezinok");
-                if(next.indexOf("streetAddress")<0){
-                  next=next.split('"addressLocality":"Pezinok"').join('"streetAddress":"Moyzesova 4","postalCode":"902 01","addressLocality":"Pezinok"');
-                }
-                lds[n].textContent=next;
-              }"""
-          if js.count(old) != 1:
-              raise SystemExit("address block not found: " + str(js.count(old)))
-          js_path.write_text(js.replace(old, new, 1), encoding="utf-8")
-          print("brand.js patched")
+          css_old = '+"@media (width<=639px){.uvod-znacka svg{height:3.4rem}a.logotyp svg{height:2.15rem}}";'
+          css_new = """+"@media (width<=639px){.uvod-znacka svg{height:3.4rem}a.logotyp svg{height:2.15rem}}"
+              +".mteq-mapa-ram{overflow:hidden;border-radius:24px;background:#fff;border:1px solid #cbd8e2}"
+              +".mteq-mapa-ram iframe{display:block;width:100%;height:280px;border:0}"
+              +"@media (width>=640px){.mteq-mapa-ram iframe{height:440px}}";"""
+          fn = """  function mapa(){
+              if(location.pathname.replace(/\\/$/,"")!=="/kontakt") return;
+              if(document.getElementById("mteq-mapa")) return;
+              var grids=document.querySelectorAll("main .obal > .grid");
+              if(!grids.length) return;
+              var grid=grids[grids.length-1];
+              var box=document.createElement("section");
+              box.id="mteq-mapa";
+              box.className="mt-10";
+              var link="https://www.google.com/maps/place/Moyzesova+4,+902+01+Pezinok/@48.284158,17.2705815,17z";
+              var src="https://maps.google.com/maps?q=Moyzesova+4,+902+01+Pezinok&ll=48.284158,17.2705815&z=17&hl=sk&output=embed";
+              box.innerHTML='<div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between"><div><span class="stitok">Kde n\\u00e1s n\\u00e1jdete</span><h2 class="t-nadpis mt-3">'+ADRESA+'</h2></div><a class="btn btn-modra" href="'+link+'" target="_blank" rel="noopener noreferrer">Otvori\\u0165 v Google map\\u00e1ch</a></div><div class="mteq-mapa-ram mt-6"><iframe title="Mapa s\\u00eddla M-TEQ, Moyzesova 4, Pezinok" src="'+src+'" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe></div>';
+              grid.parentNode.insertBefore(box, grid.nextSibling);
+            }
+          """
+          call_old = "    phone();\n    address();\n  }"
+          call_new = "    phone();\n    address();\n    mapa();\n  }"
+          paint = "  function paint(){"
+          if js.count(css_old)!=1 or js.count(call_old)!=1 or js.count(paint)!=1:
+              raise SystemExit("anchors %s %s %s" % (js.count(css_old), js.count(call_old), js.count(paint)))
+          js = js.replace(css_old, css_new, 1).replace(call_old, call_new, 1).replace(paint, fn + "  function paint(){", 1)
+          js_path.write_text(js, encoding="utf-8")
+          print("brand.js patched", len(js))
           n = 0
           for p in Path(".").rglob("*.html"):
               html = p.read_text(encoding="utf-8")
               orig = html
-              html = html.replace('brand.js?v=20261106b"', 'brand.js?v=20261106c"')
+              html = html.replace('brand.js?v=20261106c"', 'brand.js?v=20261106d"')
               if html != orig:
                   p.write_text(html, encoding="utf-8")
                   n += 1
@@ -74,6 +61,6 @@ jobs:
           if git diff --cached --quiet; then
             echo "nothing to commit"
           else
-            git commit -m "Sidlo: Moyzesova namiesto Senkvic"
+            git commit -m "Kontakt: mapa sidla Moyzesova 4"
             git push
           fi
