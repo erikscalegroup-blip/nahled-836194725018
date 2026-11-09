@@ -8,32 +8,30 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Align the hero logo with the headline
+      - name: Move the contact pin to the marked building
         run: |
           python3 << 'PY'
-          import json
           from pathlib import Path
-          PAIRS = json.loads("[[\"+\\\".uvod-znacka svg{display:block;width:auto;height:12.5rem}\\\"\", \"+\\\".uvod-domov h1.uvod-znacka{width:min(23ch,100%);font-size:2.5rem}\\\"\\n    +\\\".uvod-domov h1.uvod-znacka svg{display:block;width:100%;height:auto}\\\"\"], [\"+\\\"@media (width<=1023px){.uvod-znacka svg{height:9.5rem}h2.logotyp svg{height:7.5rem}}\\\"\", \"+\\\"@media (width<=1023px){h2.logotyp svg{height:7.5rem}}\\\"\"], [\"+\\\"@media (width<=639px){.uvod-znacka svg{height:7.5rem}h2.logotyp svg{height:6.25rem}a.logotyp svg,footer a.logotyp svg{height:1.45rem}}\\\"\", \"+\\\"@media (width<=639px){.uvod-domov h1.uvod-znacka{font-size:2rem}h2.logotyp svg{height:6.25rem}a.logotyp svg,footer a.logotyp svg{height:1.45rem}}\\\"\"], [\"    mapa();\\n  }\\n  var busy=false;\", \"    mapa();\\n    zarovnaj();\\n  }\\n  function zarovnaj(){\\n    var h1=document.querySelector(\\\"h1.uvod-znacka\\\");\\n    var veta=document.querySelector(\\\"section.uvod-domov .uvod-veta\\\");\\n    if(!h1||!veta) return;\\n    var svg=h1.querySelector(\\\"svg.mteq-logo\\\");\\n    if(!svg) return;\\n    var w=Math.round(veta.getBoundingClientRect().width);\\n    if(w<80) return;\\n    if(h1.getAttribute(\\\"data-w\\\")===String(w)) return;\\n    h1.setAttribute(\\\"data-w\\\", String(w));\\n    h1.style.width=w+\\\"px\\\";\\n    h1.style.maxWidth=\\\"100%\\\";\\n    svg.style.width=\\\"100%\\\";\\n    svg.style.height=\\\"auto\\\";\\n  }\\n  var busy=false;\"], [\"    obs.observe(document.documentElement, {childList:true, subtree:true});\\n  }\", \"    obs.observe(document.documentElement, {childList:true, subtree:true});\\n    window.addEventListener(\\\"resize\\\", function(){\\n      var h1=document.querySelector(\\\"h1.uvod-znacka\\\");\\n      if(h1) h1.removeAttribute(\\\"data-w\\\");\\n      zarovnaj();\\n    });\\n    if(document.fonts&&document.fonts.ready) document.fonts.ready.then(function(){\\n      var h1=document.querySelector(\\\"h1.uvod-znacka\\\");\\n      if(h1) h1.removeAttribute(\\\"data-w\\\");\\n      zarovnaj();\\n    });\\n  }\"]]")
-
+          old = "https://maps.google.com/maps?q=Moyzesova+4,+902+01+Pezinok&ll=48.284158,17.2705815&z=17&hl=sk&output=embed"
+          new = "https://maps.google.com/maps?q=48.283788,17.272433&ll=48.283788,17.272433&z=17&hl=sk&output=embed"
           js_path = Path("brand.js")
           js = js_path.read_text(encoding="utf-8")
-          for i,(old,new) in enumerate(PAIRS):
-              c = js.count(old)
-              if c != 1:
-                  raise SystemExit("anchor %s count %s" % (i, c))
-              js = js.replace(old, new, 1)
-          js_path.write_text(js, encoding="utf-8")
-          print("brand.js patched", len(js))
+          c = js.count(old)
+          if c != 1:
+              raise SystemExit("map url count %s" % c)
+          js_path.write_text(js.replace(old, new, 1), encoding="utf-8")
           n = 0
           for p in Path(".").rglob("*.html"):
               html = p.read_text(encoding="utf-8")
               orig = html
-              html = html.replace('brand.js?v=20261106f"', 'brand.js?v=20261106g"')
+              html = html.replace("brand.js?v=20261106g", "brand.js?v=20261109a")
               if html != orig:
                   p.write_text(html, encoding="utf-8")
                   n += 1
                   print("patched", p)
           print("count", n)
+          if n != 7:
+              raise SystemExit("html count %s" % n)
           PY
       - name: Commit
         run: |
@@ -43,6 +41,6 @@ jobs:
           if git diff --cached --quiet; then
             echo "nothing to commit"
           else
-            git commit -m "Hero: logo zarovnane s vetou"
+            git commit -m "Mapa: sipka na presnu polohu firmy"
             git push
           fi
