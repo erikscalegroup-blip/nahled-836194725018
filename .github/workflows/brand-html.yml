@@ -8,26 +8,31 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Add Google verification and allow indexing
+      - name: Allow indexing in the app bundle
         run: |
           python3 << 'PY'
           from pathlib import Path
-          old = '<meta name="robots" content="noindex, nofollow"/>'
-          new = '<meta name="google-site-verification" content="MnWOvlFbTV9R_dwkuDHAJrtEfhLT_8i6qFWrP-y4D1U"/>'
+          old = "noindex, nofollow"
+          new = "index, follow"
           n = 0
-          for p in Path(".").rglob("*.html"):
-              html = p.read_text(encoding="utf-8")
-              c = html.count(old)
-              if c == 0:
+          files = 0
+          for p in Path(".").rglob("*"):
+              if not p.is_file():
                   continue
-              if c != 1:
-                  raise SystemExit("count %s in %s" % (c, p))
-              p.write_text(html.replace(old, new, 1), encoding="utf-8")
-              n += 1
-              print("patched", p)
-          print("count", n)
-          if n != 7:
-              raise SystemExit("html count %s" % n)
+              if p.suffix.lower() not in {".js", ".html", ".mjs"}:
+                  continue
+              raw = p.read_bytes()
+              if old.encode() not in raw:
+                  continue
+              text = raw.decode("utf-8")
+              c = text.count(old)
+              p.write_text(text.replace(old, new), encoding="utf-8")
+              n += c
+              files += 1
+              print("patched", c, p)
+          print("count", n, "files", files)
+          if n != 8 or files != 1:
+              raise SystemExit("unexpected count")
           PY
       - name: Commit
         run: |
@@ -37,6 +42,6 @@ jobs:
           if git diff --cached --quiet; then
             echo "nothing to commit"
           else
-            git commit -m "SEO: overenie Google a indexovanie"
+            git commit -m "SEO: povolit indexovanie v aplikacii"
             git push
           fi
