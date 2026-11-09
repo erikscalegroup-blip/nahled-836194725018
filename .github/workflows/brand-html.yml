@@ -8,27 +8,23 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Move the contact pin to the marked building
+      - name: Add Google verification and allow indexing
         run: |
           python3 << 'PY'
           from pathlib import Path
-          old = "https://maps.google.com/maps?q=Moyzesova+4,+902+01+Pezinok&ll=48.284158,17.2705815&z=17&hl=sk&output=embed"
-          new = "https://maps.google.com/maps?q=48.283788,17.272433&ll=48.283788,17.272433&z=17&hl=sk&output=embed"
-          js_path = Path("brand.js")
-          js = js_path.read_text(encoding="utf-8")
-          c = js.count(old)
-          if c != 1:
-              raise SystemExit("map url count %s" % c)
-          js_path.write_text(js.replace(old, new, 1), encoding="utf-8")
+          old = '<meta name="robots" content="noindex, nofollow"/>'
+          new = '<meta name="google-site-verification" content="MnWOvlFbTV9R_dwkuDHAJrtEfhLT_8i6qFWrP-y4D1U"/>'
           n = 0
           for p in Path(".").rglob("*.html"):
               html = p.read_text(encoding="utf-8")
-              orig = html
-              html = html.replace("brand.js?v=20261106g", "brand.js?v=20261109a")
-              if html != orig:
-                  p.write_text(html, encoding="utf-8")
-                  n += 1
-                  print("patched", p)
+              c = html.count(old)
+              if c == 0:
+                  continue
+              if c != 1:
+                  raise SystemExit("count %s in %s" % (c, p))
+              p.write_text(html.replace(old, new, 1), encoding="utf-8")
+              n += 1
+              print("patched", p)
           print("count", n)
           if n != 7:
               raise SystemExit("html count %s" % n)
@@ -41,6 +37,6 @@ jobs:
           if git diff --cached --quiet; then
             echo "nothing to commit"
           else
-            git commit -m "Mapa: sipka na presnu polohu firmy"
+            git commit -m "SEO: overenie Google a indexovanie"
             git push
           fi
