@@ -105,7 +105,7 @@
     var box=document.createElement("section");
     box.id="mteq-mapa";
     box.className="mt-10";
-    var src="https://maps.google.com/maps?q=Moyzesova+4,+902+01+Pezinok&ll=48.284158,17.2705815&z=17&hl=sk&output=embed";
+    var src="https://maps.google.com/maps?q=48.283788,17.272433&ll=48.283788,17.272433&z=17&hl=sk&output=embed";
     box.innerHTML='<div><span class="stitok">Kde n\u00e1s n\u00e1jdete</span><h2 class="t-nadpis mt-3">'+ADRESA+'</h2></div><div class="mteq-mapa-ram mt-6"><iframe title="Mapa s\u00eddla M-TEQ, Moyzesova 4, Pezinok" src="'+src+'" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe></div>';
     grid.parentNode.insertBefore(box, grid.nextSibling);
   }
