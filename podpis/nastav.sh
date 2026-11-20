@@ -20,11 +20,9 @@ for d in "$HOME/Library/Mobile Documents/com~apple~mail/Data/V"*"/MailData/Signa
     chflags nouchg "$f" 2>/dev/null
     mkdir -p "$HOME/Documents/M-TEQ podpis zaloha"
     cp "$f" "$HOME/Documents/M-TEQ podpis zaloha/$(date +%Y%m%d-%H%M%S)-$(basename "$f")"
-    if head -1 "$f" | grep -q ':'; then
-      headers=$(sed '/^$/q' "$f" | sed '/^$/d' | sed 's/^Content-Transfer-Encoding:.*/Content-Transfer-Encoding: 7bit/')
-    else
-      headers=$(printf 'Content-Transfer-Encoding: 7bit\nContent-Type: text/html;\n\tcharset=utf-8\nMime-Version: 1.0')
-    fi
+    mid=$(tr -d '\r' < "$f" | grep -m1 -i '^Message-Id:' )
+    [ -n "$mid" ] || mid="Message-Id: <$(uuidgen)@mteq.sk>"
+    headers=$(printf 'Content-Transfer-Encoding: 7bit\nContent-Type: text/html;\n\tcharset=utf-8\n%s\nMime-Version: 1.0 (Mac OS X Mail 16.0)' "$mid")
     printf '%s\n\n%s\n' "$headers" "$BODY" > "$f"
     chflags uchg "$f" 2>/dev/null
     found=$((found+1))
