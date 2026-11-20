@@ -16,7 +16,7 @@ for d in "$HOME/Library/Mobile Documents/com~apple~mail/Data/V"*"/MailData/Signa
   if ! ls "$d" >/dev/null 2>&1; then denied=1; continue; fi
   for f in "$d"/*.mailsignature; do
     [ -f "$f" ] || continue
-    grep -q "Moyzesova" "$f" 2>/dev/null || continue
+    grep -qE "Moyzesova|MTEQ" "$f" 2>/dev/null || continue
     chflags nouchg "$f" 2>/dev/null
     mkdir -p "$HOME/Documents/M-TEQ podpis zaloha"
     cp "$f" "$HOME/Documents/M-TEQ podpis zaloha/$(date +%Y%m%d-%H%M%S)-$(basename "$f")"
@@ -40,6 +40,6 @@ elif [ "$denied" -eq 1 ]; then
   echo "zapnite Terminal, Terminal zavrite, znova otvorte a prikaz spustite este raz."
 else
   echo "Nenasiel som podpis M-TEQ."
-  echo "V Mail si najprv vytvorte podpis zo stranky mteq.sk/podpis/podpis.html, Mail zavrite a prikaz spustite znova."
+  echo "V Mail si vytvorte novy podpis, napiste don slovo MTEQ, zavrite Mail a prikaz spustite znova."
 fi
 echo ""
